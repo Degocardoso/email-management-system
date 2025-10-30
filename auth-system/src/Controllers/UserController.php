@@ -90,7 +90,7 @@ class UserController
                 );
 
                 $_SESSION['success'] = 'Usuário criado com sucesso!';
-                header('Location: /users');
+                redirect('users');
                 exit;
             }
 
@@ -98,7 +98,7 @@ class UserController
 
         } catch (\Exception $e) {
             $_SESSION['error'] = $e->getMessage();
-            header('Location: /users/create');
+            redirect('users/create');
             exit;
         }
     }
@@ -113,14 +113,14 @@ class UserController
         $id = (int)($_GET['id'] ?? 0);
         if (!$id) {
             $_SESSION['error'] = 'ID inválido';
-            header('Location: /users');
+            redirect('users');
             exit;
         }
 
         $user = $this->userModel->findById($id);
         if (!$user) {
             $_SESSION['error'] = 'Usuário não encontrado';
-            header('Location: /users');
+            redirect('users');
             exit;
         }
 
@@ -179,7 +179,7 @@ class UserController
             $_SESSION['error'] = $e->getMessage();
         }
 
-        header('Location: /users');
+        redirect('users');
         exit;
     }
 
@@ -230,7 +230,7 @@ class UserController
             $_SESSION['error'] = $e->getMessage();
         }
 
-        header('Location: /users');
+        redirect('users');
         exit;
     }
 
@@ -290,7 +290,7 @@ class UserController
             $_SESSION['error'] = $e->getMessage();
         }
 
-        header('Location: /users/sessions');
+        redirect('users/sessions');
         exit;
     }
 }

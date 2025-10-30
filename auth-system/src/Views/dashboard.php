@@ -41,7 +41,7 @@
                         <?= \Auth\Models\User::getRoleName($user['role']) ?>
                     </span>
                 </div>
-                <a href="/logout" class="btn">Sair</a>
+                <a href="<?= url('logout') ?>" class="btn">Sair</a>
             </div>
         </div>
     </div>
@@ -54,31 +54,31 @@
 
         <div class="features">
             <?php if ($user['role'] === 'admin' || $user['role'] === 'generator'): ?>
-                <div class="feature-card" onclick="window.location.href='/../gerador-de-emails-master/public/'">
+                <div class="feature-card" onclick="window.location.href='<?= url('../gerador-de-emails-master/public/') ?>'">
                     <h3>Gerar Emails</h3>
                     <p>Acesse o sistema de geração de emails</p>
                 </div>
             <?php endif; ?>
 
             <?php if ($user['role'] === 'admin' || $user['role'] === 'analyst'): ?>
-                <div class="feature-card" onclick="window.location.href='/../dynamics-email-report/public/'">
+                <div class="feature-card" onclick="window.location.href='<?= url('../dynamics-email-report/public/') ?>'">
                     <h3>Analisar Emails</h3>
                     <p>Visualize relatórios e análises de emails</p>
                 </div>
             <?php endif; ?>
 
             <?php if ($user['role'] === 'admin'): ?>
-                <div class="feature-card" onclick="window.location.href='/users'">
+                <div class="feature-card" onclick="window.location.href='<?= url('users') ?>'">
                     <h3>Gerenciar Usuários</h3>
                     <p>Crie e gerencie usuários do sistema</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='/users/sessions'">
+                <div class="feature-card" onclick="window.location.href='<?= url('users/sessions') ?>'">
                     <h3>Sessões Ativas</h3>
                     <p>Visualize usuários conectados</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='/users/audit'">
+                <div class="feature-card" onclick="window.location.href='<?= url('users/audit') ?>'">
                     <h3>Logs de Auditoria</h3>
                     <p>Visualize histórico de ações</p>
                 </div>

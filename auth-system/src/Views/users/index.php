@@ -37,7 +37,7 @@
     <div class="header">
         <div class="header-content">
             <h1>Gerenciar Usuários</h1>
-            <a href="/dashboard" class="btn btn-white">Voltar ao Dashboard</a>
+            <a href="<?= url('dashboard') ?>" class="btn btn-white">Voltar ao Dashboard</a>
         </div>
     </div>
 
@@ -59,7 +59,7 @@
 
             <div class="card-header">
                 <h2>Usuários do Sistema</h2>
-                <a href="/users/create" class="btn">+ Novo Usuário</a>
+                <a href="<?= url('users/create') ?>" class="btn">+ Novo Usuário</a>
             </div>
 
             <table>
@@ -91,10 +91,10 @@
                             <td><?= date('d/m/Y H:i', strtotime($u['created_at'])) ?></td>
                             <td>
                                 <div class="actions">
-                                    <a href="/users/edit?id=<?= $u['id'] ?>" class="btn btn-sm">Editar</a>
+                                    <a href="<?= url('users/edit?id=<?= $u['id'] ?>') ?>" class="btn btn-sm">Editar</a>
 
                                     <?php if ($u['id'] !== $currentUser['id']): ?>
-                                        <form method="POST" action="/users/delete" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja inativar este usuário?')">
+                                        <form method="POST" action="<?= url('users/delete') ?>" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja inativar este usuário?')">
                                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                             <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-danger">Inativar</button>

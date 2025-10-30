@@ -42,7 +42,7 @@
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
-            <form method="POST" action="/users/store">
+            <form method="POST" action="<?= url('users/store') ?>">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
                 <div class="form-group">
@@ -90,7 +90,7 @@
 
                 <div style="margin-top: 30px;">
                     <button type="submit" class="btn">Criar Usuário</button>
-                    <a href="/users" class="btn btn-secondary">Cancelar</a>
+                    <a href="<?= url('users') ?>" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>

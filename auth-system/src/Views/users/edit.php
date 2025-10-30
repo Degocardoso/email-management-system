@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuário</title>
-    <link rel="stylesheet" href="/users/create.php">
+    <link rel="stylesheet" href="<?= url('users/create.php') ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
@@ -31,7 +31,7 @@
 
     <div class="container">
         <div class="card">
-            <form method="POST" action="/users/update">
+            <form method="POST" action="<?= url('users/update') ?>">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                 <input type="hidden" name="id" value="<?= $user['id'] ?>">
 
@@ -76,7 +76,7 @@
 
                 <div style="margin-top: 30px;">
                     <button type="submit" class="btn">Salvar Alterações</button>
-                    <a href="/users" class="btn btn-secondary">Cancelar</a>
+                    <a href="<?= url('users') ?>" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>

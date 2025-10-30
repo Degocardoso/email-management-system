@@ -18,11 +18,17 @@ class Bootstrap
 
     private function __construct()
     {
+        $this->loadHelpers();
         $this->loadEnvironment();
         $this->setupErrorHandling();
         $this->setupLogging();
         $this->startSession();
         $this->initializeDatabase();
+    }
+
+    private function loadHelpers(): void
+    {
+        require_once __DIR__ . '/helpers.php';
     }
 
     public static function getInstance(): Bootstrap

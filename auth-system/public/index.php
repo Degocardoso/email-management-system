@@ -13,6 +13,17 @@ Bootstrap::getInstance();
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
+// Remove o base path para funcionar em subdiretórios
+$basePath = getBasePath();
+if ($basePath && strpos($requestUri, $basePath) === 0) {
+    $requestUri = substr($requestUri, strlen($basePath));
+}
+
+// Garante que sempre começa com /
+if (empty($requestUri) || $requestUri[0] !== '/') {
+    $requestUri = '/' . $requestUri;
+}
+
 // Remove trailing slash (exceto para root)
 if ($requestUri !== '/' && substr($requestUri, -1) === '/') {
     $requestUri = rtrim($requestUri, '/');
@@ -25,11 +36,11 @@ try {
         case '':
         case '/':
             if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) {
-                header('Location: /dashboard');
+                redirect('dashboard');
             } else {
-                header('Location: /login');
+                redirect('login');
             }
-            exit;
+            break;
 
         // Autenticação
         case '/login':
@@ -137,7 +148,7 @@ try {
                 <div class="error">
                     <h1>404</h1>
                     <p>Página não encontrada</p>
-                    <a href="/dashboard">Voltar ao Dashboard</a>
+                    <a href="' . url('dashboard') . '">Voltar ao Dashboard</a>
                 </div>
             </body>
             </html>';
@@ -168,7 +179,7 @@ try {
             <div class="error">
                 <h1>Erro no sistema</h1>
                 <p>Ocorreu um erro. Por favor, tente novamente mais tarde.</p>
-                <a href="/dashboard">Voltar ao Dashboard</a>
+                <a href="' . url('dashboard') . '">Voltar ao Dashboard</a>
             </div>
         </body>
         </html>';

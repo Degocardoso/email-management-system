@@ -20,7 +20,7 @@
         <div class="error-code">403</div>
         <h1>Acesso Negado</h1>
         <p><?= isset($message) ? htmlspecialchars($message) : 'Você não tem permissão para acessar esta página.' ?></p>
-        <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
+        <a href="<?= url('dashboard') ?>" class="btn">Voltar ao Dashboard</a>
     </div>
 </body>
 </html>

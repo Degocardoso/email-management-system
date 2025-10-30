@@ -54,16 +54,14 @@ class AuthController
             $user = $this->auth->login($email, $password);
 
             // Redireciona para URL salva ou dashboard
-            $redirectTo = $_SESSION['redirect_after_login'] ?? '/dashboard';
+            $redirectTo = $_SESSION['redirect_after_login'] ?? 'dashboard';
             unset($_SESSION['redirect_after_login']);
 
-            header('Location: ' . $redirectTo);
-            exit;
+            redirect($redirectTo);
 
         } catch (\Exception $e) {
             $_SESSION['error'] = $e->getMessage();
-            header('Location: /login');
-            exit;
+            redirect('login');
         }
     }
 
@@ -74,8 +72,7 @@ class AuthController
     {
         $this->auth->logout();
         $_SESSION['success'] = 'Logout realizado com sucesso';
-        header('Location: /login');
-        exit;
+        redirect('login');
     }
 
     /**

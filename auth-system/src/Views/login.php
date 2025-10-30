@@ -40,7 +40,7 @@
             <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
 
-        <form method="POST" action="/login">
+        <form method="POST" action="<?= url('login') ?>">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
             <div class="form-group">

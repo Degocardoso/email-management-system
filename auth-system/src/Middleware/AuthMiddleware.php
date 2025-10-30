@@ -28,7 +28,7 @@ class AuthMiddleware
             // Salva URL de destino para redirecionar após login
             $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? '/';
 
-            header('Location: /login');
+            redirect('login');
             exit;
         }
     }
@@ -43,7 +43,7 @@ class AuthMiddleware
         $user = $this->auth->user();
 
         if (!$user) {
-            header('Location: /login');
+            redirect('login');
             exit;
         }
 
@@ -125,7 +125,7 @@ class AuthMiddleware
     public function redirectIfAuthenticated(): void
     {
         if ($this->auth->check()) {
-            header('Location: /dashboard');
+            redirect('dashboard');
             exit;
         }
     }
