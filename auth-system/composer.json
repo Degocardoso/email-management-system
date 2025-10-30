@@ -1,0 +1,34 @@
+{
+    "name": "email-management/auth-system",
+    "description": "Sistema de autenticação e controle de acesso para gerenciamento de emails",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.0",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "vlucas/phpdotenv": "^5.0",
+        "monolog/monolog": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Auth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Auth\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "setup": "php setup.php",
+        "test": "phpunit"
+    },
+    "config": {
+        "platform-check": false,
+        "optimize-autoloader": true
+    }
+}
