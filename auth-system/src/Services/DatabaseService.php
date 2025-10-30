@@ -6,21 +6,19 @@ use PDO;
 use PDOException;
 
 /**
- * Serviço de banco de dados SQLite
+ * Serviço de banco de dados MySQL
  * Gerencia conexão e operações do banco de dados
  */
 class DatabaseService
 {
     private static ?DatabaseService $instance = null;
     private ?PDO $connection = null;
-    private string $dbPath;
 
     /**
      * Construtor privado para implementar Singleton
      */
     private function __construct()
     {
-        $this->dbPath = __DIR__ . '/../../database/auth.db';
         $this->connect();
     }
 
@@ -36,30 +34,27 @@ class DatabaseService
     }
 
     /**
-     * Conecta ao banco de dados SQLite
+     * Conecta ao banco de dados MySQL
      */
     private function connect(): void
     {
         try {
-            // Garante que o diretório existe
-            $dir = dirname($this->dbPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
+            // Carrega configurações do .env
+            $host = $_ENV['DB_HOST'] ?? 'localhost';
+            $database = $_ENV['DB_DATABASE'] ?? 'auth_system';
+            $username = $_ENV['DB_USERNAME'] ?? 'root';
+            $password = $_ENV['DB_PASSWORD'] ?? '';
 
             $this->connection = new PDO(
-                'sqlite:' . $this->dbPath,
-                null,
-                null,
+                "mysql:host={$host};dbname={$database};charset=utf8mb4",
+                $username,
+                $password,
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]
             );
-
-            // Habilita foreign keys no SQLite
-            $this->connection->exec('PRAGMA foreign_keys = ON');
         } catch (PDOException $e) {
             throw new \RuntimeException('Erro ao conectar ao banco de dados: ' . $e->getMessage());
         }
@@ -83,46 +78,43 @@ class DatabaseService
     {
         $sql = <<<SQL
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            role TEXT NOT NULL CHECK(role IN ('admin', 'analyst', 'generator')),
-            active INTEGER DEFAULT 1,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-        CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
-        CREATE INDEX IF NOT EXISTS idx_users_active ON users(active);
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL,
+            role ENUM('admin', 'analyst', 'generator') NOT NULL,
+            active TINYINT(1) DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_email (email),
+            INDEX idx_role (role),
+            INDEX idx_active (active)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
         CREATE TABLE IF NOT EXISTS user_sessions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            session_token TEXT NOT NULL UNIQUE,
-            ip_address TEXT,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            session_token VARCHAR(255) NOT NULL UNIQUE,
+            ip_address VARCHAR(45),
             user_agent TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            expires_at DATETIME NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expires_at TIMESTAMP NOT NULL,
+            INDEX idx_token (session_token),
+            INDEX idx_user (user_id),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_sessions_token ON user_sessions(session_token);
-        CREATE INDEX IF NOT EXISTS idx_sessions_user ON user_sessions(user_id);
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
         CREATE TABLE IF NOT EXISTS audit_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            action TEXT NOT NULL,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT,
+            action VARCHAR(100) NOT NULL,
             description TEXT,
-            ip_address TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            ip_address VARCHAR(45),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_user (user_id),
+            INDEX idx_created (created_at),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id);
-        CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at);
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         SQL;
 
         try {
