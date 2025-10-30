@@ -21,6 +21,8 @@ class User
     public $email;
     public $password;
     public $role;
+    public $permissions; // JSON array de permissões
+    public $description;
     public $status;
     public $last_login;
     public $login_attempts;
@@ -331,6 +333,8 @@ class User
         $user->email = $data['email'];
         $user->password = $data['password'];
         $user->role = $data['role'];
+        $user->permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
+        $user->description = $data['description'] ?? null;
         $user->status = $data['status'];
         $user->last_login = $data['last_login'];
         $user->login_attempts = $data['login_attempts'];
@@ -363,5 +367,78 @@ class User
         $sql = "SELECT COUNT(*) as count FROM users WHERE email = ?";
         $result = $this->db->queryOne($sql, [$email]);
         return $result['count'] > 0;
+    }
+
+    /**
+     * Verifica se o usuário tem uma permissão específica
+     *
+     * @param string $permission Nome da permissão (gerador, report)
+     * @return bool
+     */
+    public function hasPermission(string $permission): bool
+    {
+        // Admin tem acesso a tudo
+        if ($this->role === 'admin') {
+            return true;
+        }
+
+        // Verifica se a permissão está no array
+        if (is_array($this->permissions)) {
+            return in_array($permission, $this->permissions);
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifica se tem acesso ao Gerador de E-mails
+     *
+     * @return bool
+     */
+    public function hasGeradorAccess(): bool
+    {
+        return $this->hasPermission('gerador');
+    }
+
+    /**
+     * Verifica se tem acesso aos Relatórios
+     *
+     * @return bool
+     */
+    public function hasReportAccess(): bool
+    {
+        return $this->hasPermission('report');
+    }
+
+    /**
+     * Retorna array com todas as permissões do usuário
+     *
+     * @return array
+     */
+    public function getPermissions(): array
+    {
+        // Admin tem todas as permissões
+        if ($this->role === 'admin') {
+            return ['gerador', 'report'];
+        }
+
+        return is_array($this->permissions) ? $this->permissions : [];
+    }
+
+    /**
+     * Retorna descrição legível da role
+     *
+     * @return string
+     */
+    public function getRoleDescription(): string
+    {
+        $descriptions = [
+            'admin' => 'Administrador - Acesso Total',
+            'gerador' => 'Gerador de E-mails',
+            'report' => 'Relatórios',
+            'user' => 'Usuário Padrão'
+        ];
+
+        return $descriptions[$this->role] ?? 'Usuário';
     }
 }
