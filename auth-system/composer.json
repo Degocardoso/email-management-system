@@ -26,5 +26,9 @@
     "scripts": {
         "setup": "php setup.php",
         "test": "phpunit"
+    },
+    "config": {
+        "platform-check": false,
+        "optimize-autoloader": true
     }
 }
