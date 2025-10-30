@@ -235,6 +235,8 @@ class AuthController
         $_SESSION['user_name'] = $user->name;
         $_SESSION['user_email'] = $user->email;
         $_SESSION['user_role'] = $user->role;
+        $_SESSION['user_permissions'] = $user->getPermissions();
+        $_SESSION['user_description'] = $user->getRoleDescription();
         $_SESSION['login_time'] = time();
     }
 
@@ -264,6 +266,8 @@ class AuthController
             'name' => $_SESSION['user_name'] ?? null,
             'email' => $_SESSION['user_email'] ?? null,
             'role' => $_SESSION['user_role'] ?? null,
+            'permissions' => $_SESSION['user_permissions'] ?? [],
+            'description' => $_SESSION['user_description'] ?? 'Usuário',
         ];
     }
 

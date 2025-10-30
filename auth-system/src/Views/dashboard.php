@@ -257,6 +257,37 @@ $success = $success ?? null;
             color: white;
         }
 
+        .badge-gerador {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-report {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .badge-permission {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card.disabled {
+            opacity: 0.5;
+            filter: grayscale(100%);
+            cursor: not-allowed;
+        }
+
+        .card.disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -341,14 +372,50 @@ $success = $success ?? null;
             <div class="info-item">
                 <span class="info-label">Perfil:</span>
                 <span class="info-value">
-                    <?php if ($user['role'] === 'admin'): ?>
-                        <span class="badge badge-admin">
-                            <i class="fas fa-crown"></i> Administrador
+                    <?php
+                    $roleLabel = $user['description'] ?? 'Usuário';
+                    $roleBadge = 'badge-user';
+                    $roleIcon = 'fa-user';
+
+                    if ($user['role'] === 'admin') {
+                        $roleBadge = 'badge-admin';
+                        $roleIcon = 'fa-crown';
+                    } elseif ($user['role'] === 'gerador') {
+                        $roleBadge = 'badge-gerador';
+                        $roleIcon = 'fa-envelope';
+                    } elseif ($user['role'] === 'report') {
+                        $roleBadge = 'badge-report';
+                        $roleIcon = 'fa-chart-line';
+                    }
+                    ?>
+                    <span class="badge <?php echo $roleBadge; ?>">
+                        <i class="fas <?php echo $roleIcon; ?>"></i>
+                        <?php echo htmlspecialchars($roleLabel, ENT_QUOTES, 'UTF-8'); ?>
+                    </span>
+                </span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Permissões:</span>
+                <span class="info-value">
+                    <?php
+                    $permissions = $user['permissions'] ?? [];
+                    if (empty($permissions)):
+                    ?>
+                        <span class="badge-permission" style="background-color: #dc3545; color: white;">
+                            <i class="fas fa-ban"></i> Sem Permissões
                         </span>
                     <?php else: ?>
-                        <span class="badge badge-user">
-                            <i class="fas fa-user"></i> Usuário
-                        </span>
+                        <?php if (in_array('gerador', $permissions)): ?>
+                            <span class="badge-permission badge-gerador">
+                                <i class="fas fa-envelope"></i> Gerador
+                            </span>
+                        <?php endif; ?>
+                        <?php if (in_array('report', $permissions)): ?>
+                            <span class="badge-permission badge-report">
+                                <i class="fas fa-chart-line"></i> Report
+                            </span>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </span>
             </div>
@@ -368,26 +435,45 @@ $success = $success ?? null;
         </h2>
 
         <div class="card-grid">
+            <?php
+            $permissions = $user['permissions'] ?? [];
+            $hasGerador = in_array('gerador', $permissions);
+            $hasReport = in_array('report', $permissions);
+            ?>
+
+            <!-- Card Gerador de E-mails -->
+            <?php if ($hasGerador): ?>
             <div class="card">
                 <div class="card-icon">
-                    <i class="fas fa-envelope"></i>
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h3 class="card-title">Gerador de E-mails</h3>
+                <p class="card-description">
+                    Crie e envie campanhas de e-mail personalizadas usando o sistema gerador.
+                </p>
+                <span class="badge-permission badge-gerador" style="margin-top: 1rem;">
+                    <i class="fas fa-check"></i> Acesso Liberado
+                </span>
+            </div>
+            <?php endif; ?>
+
+            <!-- Card Relatórios de E-mail -->
+            <?php if ($hasReport): ?>
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
                 </div>
                 <h3 class="card-title">Relatórios de E-mail</h3>
                 <p class="card-description">
                     Acesse o sistema de relatórios de e-mails do Dynamics 365 para análise de campanhas.
                 </p>
+                <span class="badge-permission badge-report" style="margin-top: 1rem;">
+                    <i class="fas fa-check"></i> Acesso Liberado
+                </span>
             </div>
+            <?php endif; ?>
 
-            <div class="card">
-                <div class="card-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h3 class="card-title">Análise de Dados</h3>
-                <p class="card-description">
-                    Visualize métricas e estatísticas de engajamento das suas campanhas de marketing.
-                </p>
-            </div>
-
+            <!-- Card Configurações (todos têm acesso) -->
             <div class="card">
                 <div class="card-icon">
                     <i class="fas fa-cog"></i>
@@ -398,6 +484,7 @@ $success = $success ?? null;
                 </p>
             </div>
 
+            <!-- Card Admin (apenas para admin) -->
             <?php if ($user['role'] === 'admin'): ?>
             <div class="card">
                 <div class="card-icon">
@@ -405,7 +492,23 @@ $success = $success ?? null;
                 </div>
                 <h3 class="card-title">Gerenciar Usuários</h3>
                 <p class="card-description">
-                    Administre usuários do sistema, permissões e acessos. (Apenas Administradores)
+                    Administre usuários do sistema, permissões e acessos.
+                </p>
+                <span class="badge-permission badge-admin" style="margin-top: 1rem;">
+                    <i class="fas fa-crown"></i> Admin
+                </span>
+            </div>
+            <?php endif; ?>
+
+            <!-- Mensagem se não tiver nenhuma permissão -->
+            <?php if (empty($permissions)): ?>
+            <div class="card disabled">
+                <div class="card-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <h3 class="card-title">Sem Permissões</h3>
+                <p class="card-description">
+                    Você ainda não possui permissões para acessar os sistemas. Entre em contato com o administrador.
                 </p>
             </div>
             <?php endif; ?>
