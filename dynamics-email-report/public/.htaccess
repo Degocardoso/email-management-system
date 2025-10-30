@@ -1,0 +1,45 @@
+# Aumenta timeout e memória para processar grandes volumes
+php_value max_execution_time 600
+php_value max_input_time 600
+php_value memory_limit 1024M
+php_value default_socket_timeout 600
+
+# Configurações de upload
+php_value post_max_size 50M
+php_value upload_max_filesize 50M
+
+# Apache 2.4+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redireciona tudo para index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Desabilita listagem de diretórios
+Options -Indexes
+
+# Configurações de segurança (Apache 2.4)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Compressão
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+</IfModule>
+
+# Cache de arquivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>

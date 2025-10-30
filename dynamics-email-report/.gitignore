@@ -1,0 +1,35 @@
+# Dependências
+/vendor/
+composer.lock
+
+# Ambiente
+.env
+
+# Logs
+/logs/*.log
+/logs/*
+
+# Cache
+/storage/cache/*
+!/storage/cache/.gitkeep
+
+# Sessões
+/storage/sessions/*
+!/storage/sessions/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Testes
+/tests/_output/*
+phpunit.xml
+.phpunit.result.cache
