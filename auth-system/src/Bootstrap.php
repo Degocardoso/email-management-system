@@ -110,15 +110,14 @@ class Bootstrap
         try {
             $db = DatabaseService::getInstance();
 
-            // Verifica se banco já foi inicializado
-            $dbPath = __DIR__ . '/../database/auth.db';
-            if (!file_exists($dbPath)) {
-                $db->initializeTables();
-                $this->logger->info('Database initialized');
-            }
+            // Para MySQL, sempre tenta criar as tabelas (CREATE IF NOT EXISTS)
+            // Isso é seguro e não causa erro se as tabelas já existem
+            $db->initializeTables();
+
         } catch (\Exception $e) {
             $this->logger->error('Database initialization failed', ['error' => $e->getMessage()]);
-            throw $e;
+            // Não propaga o erro para não quebrar a aplicação
+            // O erro será registrado no log
         }
     }
 
