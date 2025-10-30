@@ -1,0 +1,29 @@
+# Vendor
+/vendor/
+
+# Environment
+.env
+
+# Database
+/database/*.db
+/database/*.sqlite
+
+# Logs
+/logs/*.log
+
+# Storage
+/storage/cache/*
+/storage/sessions/*
+!/storage/cache/.gitkeep
+!/storage/sessions/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
